@@ -35,9 +35,8 @@ if git branch --show-current | grep -q 'main\|master\|trunk'; then
 fi
 
 solution=$(find . -maxdepth 1 -name "*.sln" -type f | head -1)
-changed=$(git diff --cached --diff-filter=ACM --name-only -z "*.cs" | xargs -0)
-if [[ -n "$changed" ]]; then
-  dotnet format "$solution" --verify-no-changes --include $changed
+if ! git diff --cached --diff-filter=ACM --name-only --quiet "*.cs"; then
+  git diff --cached --diff-filter=ACM --name-only "*.cs" | dotnet format "$solution" --verify-no-changes --include -
   exit $?
 fi
 ```
